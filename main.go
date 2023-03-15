@@ -25,7 +25,7 @@ func main() {
 
 	src := client.Host().Directory(".")
 
-	id, err := src.File("go.Sum").ID(ctx)
+	id, err := src.File("cache.txt").ID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ func main() {
 		WithMountedDirectory("/src", src).
 		WithMountedCache("/foo", fooCache).
 		WithEnvVariable("CACHE_BUST", time.Now().String()).
-		WithExec([]string{"touch", "/foo/bar.txt"}).
 		WithExec([]string{"ls", "/foo"}).
+		WithExec([]string{"touch", "/foo/bar.txt"}).
 		ExitCode(ctx)
 }

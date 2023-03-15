@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -22,10 +23,18 @@ func main() {
 		panic(err)
 	}
 
-	fooCache := client.CacheVolume("foo-cache")
+	src := client.Host().Directory(".")
+
+	id, err := src.File("go.Sum").ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	fooCache := client.CacheVolume(fmt.Sprintf("foo-cache-%s", id))
 
 	client.Container().
 		From("golang:1.18-alpine3.16").
+		WithMountedDirectory("/src", src).
 		WithMountedCache("/foo", fooCache).
 		WithEnvVariable("CACHE_BUST", time.Now().String()).
 		WithExec([]string{"touch", "/foo/bar.txt"}).
